@@ -107,6 +107,7 @@ io.on("connection", function(socket){
         });
 
         socket.on('screen_share',(stream) => {
+            console.log("stream", stream)
             socket.to(roomId).broadcast.emit("start_screen_share", userId, stream)
         });
     });
