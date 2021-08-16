@@ -1,0 +1,24 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "peer": "^0.6.1",
+    "socket.io": "^3.1.2",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.7"
+  },
+  "scripts": {
+    "dev": "nodemon app",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "git": "git add . && git commit -m 'rajib chat' && git push -u  origin master",
+    "start": "node app"
+  },
+  "author": "",
+  "license": "ISC"
+}
