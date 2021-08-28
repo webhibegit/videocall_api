@@ -106,9 +106,8 @@ io.on("connection", function(socket){
             socket.to(roomId).broadcast.emit("make_speaker_status", userId, data)
         });
 
-        socket.on('screen_share',(stream) => {
-            console.log("stream", stream)
-            socket.to(roomId).broadcast.emit("start_screen_share", userId, stream)
+        socket.on('screen_share',(screenId) => {
+            socket.to(roomId).broadcast.emit("start_screen_share", screenId)
         });
     });
 
