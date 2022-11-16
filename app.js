@@ -57,7 +57,7 @@ io.on("connection", function(socket){
         });
 
         socket.on('send-myData', ({remoteSocketId, myData}) => {
-            socket.to(remoteSocketId).emit("receive-data", myData)
+            socket.to(remoteSocketId).emit("receive-data", myData, remoteSocketId)
         })
 
         socket.on('audio', (status) => {
@@ -69,6 +69,10 @@ io.on("connection", function(socket){
             console.log("raiseHand_status", data)
             socket.to(roomId).broadcast.emit("raiseHand_status", userId, data)
         });
+
+        socket.on('remove_member_moderator', (data) => {
+            socket.to(roomId).emit('remove_member_moderator', userId, data)
+        })
 
         socket.on('love', (data) => {
             console.log("love_status", data);
