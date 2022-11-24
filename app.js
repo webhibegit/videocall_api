@@ -81,8 +81,9 @@ io.on("connection", function(socket){
             socket.to(roomId).broadcast.emit("love_status", userId, data);
         });
 
-        socket.on('video', (status, stream) => {
-            socket.to(roomId).broadcast.emit("video_status", userId, status, stream)
+        socket.on('video', (status, track) => {
+            console.log("track", status, track)
+            socket.to(roomId).broadcast.emit("video_status", userId, status, track)
         });
 
         socket.on('speaker', (status) => {
