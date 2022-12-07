@@ -153,6 +153,10 @@ io.on("connection", function(socket){
             socket.to(remoteSocketId).emit('user-already-connected', userId, tableIndex, userImage);
         })
 
+        socket.on('send-request', (remoteSocketId, data) => {
+            socket.to(remoteSocketId).emit('receive-request', socket.id, data)
+        })
+
         socket.on('bye_bye', () => {
             // console.log("bye_bye", data);
             // console.log("leave0",socket.rooms, socket.sids)
