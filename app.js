@@ -149,7 +149,7 @@ io.on("connection", function(socket){
         socket.to(roomId).broadcast.emit('user-connected', userId, tableIndex, userImage, socket.id);
 
         socket.on('already-connected', (remoteSocketId) => {
-            socket.to(remoteSocketId).broadcast.emit('user-already-connected', userId, tableIndex, userImage);
+            socket.to(remoteSocketId).emit('user-already-connected', userId, tableIndex, userImage);
         })
 
         socket.on('bye_bye', () => {
