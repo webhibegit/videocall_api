@@ -144,6 +144,15 @@ io.on("connection", function(socket){
 
     });
 
+    socket.on('movie-table-join', ({roomId, userId, tableIndex, userImage}) => {
+        socket.join(roomId);
+        socket.to(roomId).broadcast.emit('user-connected', userId, tableIndex, userImage, socket.id);
+
+        socket.on('already-connected', (remoteSocketId) => {
+            socket.to(remoteSocketId).broadcast.emit('user-already-connected', userId, tableIndex, userImage);
+        })
+    })
+
     
 });
 
