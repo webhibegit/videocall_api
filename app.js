@@ -151,6 +151,16 @@ io.on("connection", function(socket){
         socket.on('already-connected', (remoteSocketId) => {
             socket.to(remoteSocketId).broadcast.emit('user-already-connected', userId, tableIndex, userImage);
         })
+
+        socket.on('bye_bye', () => {
+            // console.log("bye_bye", data);
+            // console.log("leave0",socket.rooms, socket.sids)
+            socket.leave(roomId);
+
+            // console.log("leave1",socket.rooms, socket.sids)
+
+            socket.to(roomId).broadcast.emit("bye_bye_status", tableIndex);
+        });
     })
 
     
