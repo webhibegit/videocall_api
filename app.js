@@ -150,7 +150,7 @@ io.on("connection", function(socket){
 
         socket.on('already-connected', (remoteSocketId) => {
             console.log("already-connected")
-            socket.to(remoteSocketId).emit('user-already-connected', userId, tableIndex, userImage);
+            socket.to(remoteSocketId).emit('user-already-connected', userId, tableIndex, userImage, socket.id);
         })
 
         socket.on('send-request', (remoteSocketId, data) => {
