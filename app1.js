@@ -28,8 +28,8 @@ const app = express();
 app.use(cors());
 
 const server = http.createServer(app);
-// const io = soketio(server).sockets;
 const io = soketio(server, { cors: { origin: '*' } }).sockets;
+// var io = require('socket.io')(http, { cors: { origin: '*' } });
 
 
 
@@ -61,7 +61,6 @@ io.on("connection", function (socket) {
         });
 
         socket.on('send-myData', ({ remoteSocketId, myData }) => {
-            myData.socketId = socket.id;
             socket.to(remoteSocketId).emit("receive-data", myData, remoteSocketId)
         })
 
@@ -75,9 +74,8 @@ io.on("connection", function (socket) {
             socket.to(roomId).broadcast.emit("raiseHand_status", userId, data)
         });
 
-        socket.on('remove_member_moderator', (remoteSocketId) => {
-            console.log("remoteSocketId", remoteSocketId)
-            socket.to(remoteSocketId).emit('remove_member_moderator')
+        socket.on('remove_member_moderator', (data) => {
+            socket.to(roomId).emit('remove_member_moderator', userId, data)
         })
 
         socket.on('love', (data) => {
@@ -85,9 +83,8 @@ io.on("connection", function (socket) {
             socket.to(roomId).broadcast.emit("love_status", userId, data);
         });
 
-        socket.on('video', (status, track) => {
-            console.log("track", status, track)
-            socket.to(roomId).broadcast.emit("video_status", userId, status, track)
+        socket.on('video', (status) => {
+            socket.to(roomId).broadcast.emit("video_status", userId, status)
         });
 
         socket.on('speaker', (status) => {
@@ -147,30 +144,6 @@ io.on("connection", function (socket) {
         });
 
     });
-
-    socket.on('movie-table-join', ({ roomId, userId, tableIndex, userImage }) => {
-        socket.join(roomId);
-        socket.to(roomId).broadcast.emit('user-connected', userId, tableIndex, userImage, socket.id);
-
-        socket.on('already-connected', (remoteSocketId) => {
-            console.log("already-connected")
-            socket.to(remoteSocketId).emit('user-already-connected', userId, tableIndex, userImage, socket.id);
-        })
-
-        socket.on('send-request', (remoteSocketId, data) => {
-            socket.to(remoteSocketId).emit('receive-request', socket.id, data)
-        })
-
-        socket.on('bye_bye', () => {
-            // console.log("bye_bye", data);
-            // console.log("leave0",socket.rooms, socket.sids)
-            socket.leave(roomId);
-
-            // console.log("leave1",socket.rooms, socket.sids)
-
-            socket.to(roomId).broadcast.emit("bye_bye_status", tableIndex);
-        });
-    })
 
 
 });
