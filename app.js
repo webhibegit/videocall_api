@@ -28,8 +28,8 @@ const app = express();
 app.use(cors());
 
 const server = http.createServer(app);
-// const io = soketio(server).sockets;
-var io = require('socket.io')(http, { cors: { origin: '*' } });
+const io = soketio(server, { cors: { origin: '*' } }).sockets;
+// var io = require('socket.io')(http, { cors: { origin: '*' } });
 
 
 
