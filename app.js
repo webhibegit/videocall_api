@@ -24,6 +24,7 @@ const { ExpressPeerServer } = require('peer');
 
 
 const app = express();
+app.use(cors());
 
 const server = http.createServer(app);
 // const io = soketio(server).sockets;
