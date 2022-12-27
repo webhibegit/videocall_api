@@ -26,27 +26,29 @@ const { ExpressPeerServer } = require('peer');
 const app = express();
 
 const server = http.createServer(app);
-const io = soketio(server).sockets;
+// const io = soketio(server).sockets;
+var io = require('socket.io')(http, { cors: { origin: '*' } });
+
 
 
 app.use(express.json());
 
-const customGenerationFunction = () => 
-(Math.random().toString(36) + "000000000000000").substr(2,16);
+const customGenerationFunction = () =>
+    (Math.random().toString(36) + "000000000000000").substr(2, 16);
 
 
 const peerServer = ExpressPeerServer(server, {
-    debug : true,
+    debug: true,
     path: '/',
-    generateClientId : customGenerationFunction,
+    generateClientId: customGenerationFunction,
 });
 
 app.use("/mypeer", peerServer);
 
-io.on("connection", function(socket){
+io.on("connection", function (socket) {
     socket.setMaxListeners(10000)
     console.log("conneted");
-    socket.on('join-room',({roomId, userId, myData}) => {
+    socket.on('join-room', ({ roomId, userId, myData }) => {
         // console.log("join-room call");
         console.log("roomId", roomId, userId, myData)
         socket.join(roomId);
@@ -56,8 +58,7 @@ io.on("connection", function(socket){
             socket.to(roomId).broadcast.emit("user-disconnected", userId)
         });
 
-        socket.on('send-myData', ({remoteSocketId, myData}) => {
-            myData.socketId = socket.id;
+        socket.on('send-myData', ({ remoteSocketId, myData }) => {
             socket.to(remoteSocketId).emit("receive-data", myData, remoteSocketId)
         })
 
@@ -71,9 +72,8 @@ io.on("connection", function(socket){
             socket.to(roomId).broadcast.emit("raiseHand_status", userId, data)
         });
 
-        socket.on('remove_member_moderator', (remoteSocketId) => {
-            console.log("remoteSocketId", remoteSocketId)
-            socket.to(remoteSocketId).emit('remove_member_moderator')
+        socket.on('remove_member_moderator', (data) => {
+            socket.to(roomId).emit('remove_member_moderator', userId, data)
         })
 
         socket.on('love', (data) => {
@@ -81,9 +81,8 @@ io.on("connection", function(socket){
             socket.to(roomId).broadcast.emit("love_status", userId, data);
         });
 
-        socket.on('video', (status, track) => {
-            console.log("track", status, track)
-            socket.to(roomId).broadcast.emit("video_status", userId, status, track)
+        socket.on('video', (status) => {
+            socket.to(roomId).broadcast.emit("video_status", userId, status)
         });
 
         socket.on('speaker', (status) => {
@@ -93,7 +92,7 @@ io.on("connection", function(socket){
 
         socket.on('grpchat', (data) => {
             console.log("grpchat", data);
-            socket.to(roomId).broadcast.emit("getgrpchat", userId ,data)
+            socket.to(roomId).broadcast.emit("getgrpchat", userId, data)
         });
         socket.on('leave_all', (data) => {
             console.log("leave_all", data);
@@ -101,28 +100,28 @@ io.on("connection", function(socket){
         });
         socket.on('bye_bye', (data) => {
             console.log("bye_bye", data);
-            console.log("leave0",socket.rooms, socket.sids)
+            console.log("leave0", socket.rooms, socket.sids)
             socket.leave(roomId);
 
-            console.log("leave1",socket.rooms, socket.sids)
+            console.log("leave1", socket.rooms, socket.sids)
 
-            socket.to(roomId).broadcast.emit("bye_bye_status",userId, data);
+            socket.to(roomId).broadcast.emit("bye_bye_status", userId, data);
         });
         socket.on('make_speaker', (data) => {
             console.log("make_speaker", data);
             socket.to(roomId).broadcast.emit("make_speaker_status", userId, data)
         });
 
-        socket.on('screen_share',(screenId) => {
+        socket.on('screen_share', (screenId) => {
             socket.to(roomId).broadcast.emit("start_screen_share", screenId)
         });
 
-        socket.on('screen_share_stop',(screenId) => {
+        socket.on('screen_share_stop', (screenId) => {
             socket.to(roomId).broadcast.emit("stop_screen_share", screenId)
         });
     });
 
-    socket.on('event-room',({roomId, userId}) => {
+    socket.on('event-room', ({ roomId, userId }) => {
         // console.log("join-room call");
         console.log("event roomId", roomId, userId)
         socket.join(roomId);
@@ -132,7 +131,7 @@ io.on("connection", function(socket){
             socket.to(roomId).broadcast.emit("event-user-disconnected", userId)
         })
 
-        socket.on('session_start', ({status}) => {
+        socket.on('session_start', ({ status }) => {
             console.log("session_start_status", status)
             socket.to(roomId).broadcast.emit("session_start_status", status)
         });
@@ -144,37 +143,13 @@ io.on("connection", function(socket){
 
     });
 
-    socket.on('movie-table-join', ({roomId, userId, tableIndex, userImage}) => {
-        socket.join(roomId);
-        socket.to(roomId).broadcast.emit('user-connected', userId, tableIndex, userImage, socket.id);
 
-        socket.on('already-connected', (remoteSocketId) => {
-            console.log("already-connected")
-            socket.to(remoteSocketId).emit('user-already-connected', userId, tableIndex, userImage, socket.id);
-        })
-
-        socket.on('send-request', (remoteSocketId, data) => {
-            socket.to(remoteSocketId).emit('receive-request', socket.id, data)
-        })
-
-        socket.on('bye_bye', () => {
-            // console.log("bye_bye", data);
-            // console.log("leave0",socket.rooms, socket.sids)
-            socket.leave(roomId);
-
-            // console.log("leave1",socket.rooms, socket.sids)
-
-            socket.to(roomId).broadcast.emit("bye_bye_status", tableIndex);
-        });
-    })
-
-    
 });
 
-const port = process.env.PORT || 5000 ;
+const port = process.env.PORT || 5000;
 
 
-server.listen(port  ,() =>
-  console.log(`Server running at port ${port}`)
+server.listen(port, () =>
+    console.log(`Server running at port ${port}`)
 );
 // nms.run();

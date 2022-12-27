@@ -18,7 +18,7 @@
     "dev": "nodemon app",
     "test": "echo \"Error: no test specified\" && exit 1",
     "git": "git add . && git commit -m 'rajib chat' && git push -u  origin master",
-    "start": "node app"
+    "start": "nodemon app"
   },
   "author": "",
   "license": "ISC"
