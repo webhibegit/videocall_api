@@ -61,6 +61,7 @@ io.on("connection", function (socket) {
         });
 
         socket.on('send-myData', ({ remoteSocketId, myData }) => {
+            console.log(" remoteSocketId, myData", remoteSocketId, myData)
             myData.socketId = socket.id;
             socket.to(remoteSocketId).emit("receive-data", myData, remoteSocketId)
         })
