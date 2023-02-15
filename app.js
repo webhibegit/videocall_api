@@ -120,6 +120,10 @@ io.on("connection", function(socket){
         socket.on('screen_share_stop',(screenId) => {
             socket.to(roomId).broadcast.emit("stop_screen_share", screenId)
         });
+
+        socket.on('stop_screen_share', (data) => {
+            socket.to(roomId).broadcast.emit('stop_screen_share', data)
+        })
     });
 
     socket.on('event-room',({roomId, userId}) => {
